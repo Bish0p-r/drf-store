@@ -1,9 +1,11 @@
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from api.products.models import Product
-from api.products.serializers import ProductSerializer
+from api.products.models import Product, Size
+from api.products.serializers import ProductSerializer, SizeSerializer
+from api.reviews.serializers import ReviewSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -16,7 +18,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Product.objects.all()
 
     def get_object(self):
-        obj = Product.objects.get(pk=self.kwargs['pk'])
+        # obj = Product.objects.get(pk=self.kwargs['pk'])
+        obj = get_object_or_404(self.get_queryset(), pk=self.kwargs['pk'])
 
         self.check_object_permissions(self.request, obj)
 
@@ -43,3 +46,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(product)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SizeViewSet(viewsets.ModelViewSet):
+    serializer_class = SizeSerializer
+    filter_backends = [filters.OrderingFilter]
+
+    def get_queryset(self):
+        return Size.objects.filter(product__pk=self.kwargs['product_pk'])

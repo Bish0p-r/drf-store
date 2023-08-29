@@ -1,14 +1,17 @@
 from django.contrib import admin
 
+from api.reviews.admin import ReviewInline
 from api.products.models import Product, ProductCategory, Brand, Size, Gallery
 
 
 class GalleryInline(admin.TabularInline):
     model = Gallery
+    extra = 1
 
 
 class SizeInline(admin.TabularInline):
     model = Size
+    extra = 1
 
 
 @admin.register(Brand)
@@ -23,7 +26,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display_links = ('name', 'category')
     search_fields = ('name', 'category')
     prepopulated_fields = {'slug': ('name',)}
-    inlines = [GalleryInline, SizeInline]
+    inlines = [GalleryInline, SizeInline, ReviewInline]
 
 
 @admin.register(ProductCategory)

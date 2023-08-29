@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from api.products.models import Product, Brand, ProductCategory, Size, Gallery
+from api.reviews.serializers import ReviewSerializer
 
 
 class ProductCategorySerializer(serializers.ModelSerializer):
@@ -32,11 +33,12 @@ class ProductSerializer(serializers.ModelSerializer):
     category = ProductCategorySerializer()
     sizes = SizeSerializer(many=True)
     gallery = GallerySerializer(many=True)
+    reviews = ReviewSerializer(many=True)
 
     class Meta:
         model = Product
         fields = (
             'id', 'name', 'price', 'article',
             'description', 'created', 'image',  'slug',
-            'sex', 'category', 'brands', 'sizes', 'gallery'
+            'sex', 'category', 'brands', 'sizes', 'gallery', 'reviews',
                   )
