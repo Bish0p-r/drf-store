@@ -14,12 +14,13 @@ class ProductViewSet(AbstractViewSet):
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['created']
     ordering = ['-created']
+    lookup_field = 'public_id'
 
     def get_queryset(self):
         return Product.objects.all()
 
     def get_object(self):
-        obj = Product.objects.get_object_by_public_id(self.kwargs['pk'])
+        obj = Product.objects.get_object_by_public_id(self.kwargs['public_id'])
 
         self.check_object_permissions(self.request, obj)
 
@@ -51,12 +52,13 @@ class ProductViewSet(AbstractViewSet):
 class SizeViewSet(viewsets.ModelViewSet):
     serializer_class = SizeSerializer
     filter_backends = [filters.OrderingFilter]
+    lookup_field = 'public_id'
 
     def get_queryset(self):
-        return Size.objects.filter(product__public_id=self.kwargs['product_pk'])
+        return Size.objects.filter(product__public_id=self.kwargs['product_public_id'])
 
     def get_object(self):
-        obj = Size.objects.get_object_by_public_id(self.kwargs['pk'])
+        obj = Size.objects.get_object_by_public_id(self.kwargs['public_id'])
 
         self.check_object_permissions(self.request, obj)
 

@@ -10,6 +10,7 @@ class UserViewSet(AbstractViewSet):
     # permission_classes = (IsAuthenticated,)
     permission_classes = (AllowAny,)
     serializer_class = UserSerializer
+    lookup_field = 'public_id'
 
     def get_queryset(self):
         if self.request.user.is_superuser:
@@ -17,6 +18,6 @@ class UserViewSet(AbstractViewSet):
         return User.objects.exclude(is_superuser=True)
 
     def get_object(self):
-        obj = User.objects.get_object_by_public_id(self.kwargs['pk'])
+        obj = User.objects.get_object_by_public_id(self.kwargs['public_id'])
         self.check_object_permissions(self.request, obj)
         return obj
