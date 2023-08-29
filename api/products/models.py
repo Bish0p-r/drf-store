@@ -1,14 +1,15 @@
 from django.db import models
 
+from api.abstract.models import AbstractModel
 
-class Product(models.Model):
+
+class Product(AbstractModel):
     name = models.CharField(max_length=256)
     brands = models.ManyToManyField('Brand', related_name='brand')
     description = models.TextField(blank=True)
     article = models.CharField(max_length=128, null=True, blank=True, unique=True)
     price = models.DecimalField(max_digits=8, decimal_places=0)
     image = models.ImageField(upload_to='products_images')
-    created = models.DateTimeField(auto_now_add=True)
     category = models.ForeignKey('ProductCategory', on_delete=models.CASCADE)
     slug = models.SlugField(max_length=130, unique=True, db_index=True)
     sex = models.CharField(max_length=10, choices=(
@@ -43,7 +44,7 @@ class Brand(models.Model):
         return self.name
 
 
-class Size(models.Model):
+class Size(AbstractModel):
     name = models.CharField(max_length=128)
     quantity = models.PositiveIntegerField(default=0)
     product = models.ForeignKey(to=Product, on_delete=models.CASCADE, related_name='sizes')

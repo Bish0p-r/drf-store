@@ -7,9 +7,9 @@ from api.products.models import Product
 
 
 class ReviewSerializer(AbstractSerializer):
-    author = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field='username')
-    product = serializers.SlugRelatedField(queryset=Product.objects.all(), slug_field='name')
+    author = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field='public_id')
+    product = serializers.SlugRelatedField(queryset=Product.objects.all(), slug_field='public_id')
 
     class Meta:
         model = Review
-        fields = ('id', 'author', 'product', 'rating', 'text',)
+        fields = ('public_id', 'author', 'product', 'rating', 'text',)

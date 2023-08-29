@@ -18,7 +18,7 @@ class BrandSerializer(serializers.ModelSerializer):
 class SizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Size
-        exclude = ('product',)
+        fields = ('public_id', 'name', 'quantity',)
 
 
 class GallerySerializer(serializers.ModelSerializer):
@@ -28,7 +28,6 @@ class GallerySerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    # brands = BrandSerializer(many=True)
     brands = serializers.SlugRelatedField(many=True, read_only=True, slug_field='name')
     category = ProductCategorySerializer()
     sizes = SizeSerializer(many=True)
@@ -38,7 +37,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
-            'id', 'name', 'price', 'article',
+            'public_id', 'name', 'price', 'article',
             'description', 'created', 'image',  'slug',
             'sex', 'category', 'brands', 'sizes', 'gallery', 'reviews',
                   )
