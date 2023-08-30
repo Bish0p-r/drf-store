@@ -24,7 +24,7 @@ class SizeSerializer(serializers.ModelSerializer):
 class GallerySerializer(serializers.ModelSerializer):
     class Meta:
         model = Gallery
-        fields = ('id', 'image')
+        fields = ('id', 'image',)
 
 
 class ProductSerializer(serializers.ModelSerializer):

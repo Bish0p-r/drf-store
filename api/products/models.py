@@ -50,7 +50,7 @@ class Size(AbstractModel):
     product = models.ForeignKey(to=Product, on_delete=models.CASCADE, related_name='sizes')
 
     def __str__(self):
-        return self.name
+        return f'{self.product} - {self.name}'
 
 
 class Gallery(models.Model):
