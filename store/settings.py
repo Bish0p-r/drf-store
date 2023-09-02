@@ -17,7 +17,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'api.products',
     'api.reviews',
     'api.cart',
+    'api.order',
+    'api.payment',
 ]
 
 MIDDLEWARE = [
@@ -140,3 +142,8 @@ REST_FRAMEWORK = {
         'rest_framework.pagination.LimitOffsetPagination',
         'PAGE_SIZE': 15,
 }
+
+# Yookassa
+
+YOOKASSA_SECRET_KEY = env.str("YOOKASSA_SECRET_KEY")
+YOOKASSA_ACCOUNT_ID = env.int("YOOKASSA_ACCOUNT_ID")

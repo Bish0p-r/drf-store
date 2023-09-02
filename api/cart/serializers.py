@@ -12,3 +12,11 @@ class CartSerializer(AbstractSerializer):
     class Meta:
         model = Cart
         fields = ('public_id', 'product_size', 'quantity',)
+
+
+class CartHistorySerializer(AbstractSerializer):
+    product_size = SizeSerializer()
+
+    class Meta:
+        model = Cart
+        fields = '__all__'

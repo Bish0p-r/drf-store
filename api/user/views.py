@@ -7,6 +7,7 @@ from api.user.serializers import UserSerializer
 from api.user.models import User
 from api.abstract.viewsets import AbstractViewSet
 from api.cart.models import Cart
+from api.order.models import Order
 
 
 class UserViewSet(AbstractViewSet):
@@ -17,6 +18,8 @@ class UserViewSet(AbstractViewSet):
     lookup_field = 'public_id'
 
     def get_queryset(self):
+        ip = self.request.META['REMOTE_ADDR']
+        print(ip)
         if self.request.user.is_superuser:
             return User.objects.all()
         return User.objects.exclude(is_superuser=True)
@@ -36,3 +39,34 @@ class UserViewSet(AbstractViewSet):
         serializer = self.serializer_class(user)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # @action(methods=['post'], detail=True)
+    # def order_create(self, request, *args, **kwargs):
+    #     user = self.request.user
+    #     cart = Cart.objects.filter(user=user)
+    #
+    #     if not cart.exists():
+    #         return Response(status=status.HTTP_400_BAD_REQUEST)
+    #
+    #     order = Order.objects.create(user=user)
+    #
+    #
+    #     serializer = self.serializer_class(user)
+    #
+    #     return Response(serializer.data, status=status.HTTP_200_OK)

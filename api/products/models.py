@@ -19,6 +19,14 @@ class Product(AbstractModel):
     ),
         default='U')
 
+    @property
+    def total_rating(self):
+        return sum(i.rating for i in self.reviews.all())
+
+    @property
+    def total_reviews(self):
+        return len(self.reviews.all())
+
     def __str__(self):
         return self.name
 

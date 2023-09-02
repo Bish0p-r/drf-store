@@ -97,7 +97,6 @@ class SizeViewSet(viewsets.ModelViewSet):
 
         if cart.exists():
             cart = cart.first()
-
             if cart.quantity - quantity <= 0:
                 cart.delete()
             else:
