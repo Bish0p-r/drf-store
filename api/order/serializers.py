@@ -7,8 +7,6 @@ from api.user.models import User
 
 
 class OrderSerializer(AbstractSerializer):
-    # permission_classes = (IsAuthenticated,)
-
     class Meta:
         model = Order
         exclude = ('initiator',)

@@ -5,14 +5,19 @@ from api.products.views import ProductViewSet, SizeViewSet
 from api.reviews.views import ReviewViewSet
 from api.order.views import OrderViewSet
 from api.payment.views import CreatePaymentView, CreatePaymentAcceptanceView
+from api.auth.views import RegisterViewSet, LoginViewSet, RefreshViewSet
 
 router = routers.SimpleRouter()
 
+router.register(r'auth/register', RegisterViewSet, basename='auth-register')
+router.register(r'auth/login', LoginViewSet, basename='auth-login')
+router.register(r'auth/refresh', RefreshViewSet, basename='auth-refresh')
+
 router.register(r'user', UserViewSet, basename='user')
 
-router.register(r'product', ProductViewSet, basename='product')
-
 router.register(r'order', OrderViewSet, basename='order')
+
+router.register(r'product', ProductViewSet, basename='product')
 
 size_router = routers.NestedSimpleRouter(router, r'product', lookup='product')
 size_router.register(r'size', SizeViewSet, basename='product-size')

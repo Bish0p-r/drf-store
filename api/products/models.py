@@ -4,6 +4,12 @@ from api.abstract.models import AbstractModel
 
 
 class Product(AbstractModel):
+    SEX_CHOICES = (
+        ('M', 'Mens'),
+        ('W', 'Womens'),
+        ('U', 'Unisex'),
+    )
+
     name = models.CharField(max_length=256)
     brands = models.ManyToManyField('Brand', related_name='brand')
     description = models.TextField(blank=True)
@@ -12,12 +18,7 @@ class Product(AbstractModel):
     image = models.ImageField(upload_to='products_images')
     category = models.ForeignKey('ProductCategory', on_delete=models.CASCADE)
     slug = models.SlugField(max_length=130, unique=True, db_index=True)
-    sex = models.CharField(max_length=10, choices=(
-        ('M', 'Mens'),
-        ('W', 'Womens'),
-        ('U', 'Unisex'),
-    ),
-        default='U')
+    sex = models.CharField(max_length=10, choices=SEX_CHOICES, default='U')
 
     @property
     def total_rating(self):

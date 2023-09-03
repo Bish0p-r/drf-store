@@ -1,6 +1,9 @@
 import os
-from pathlib import Path
 import environ
+
+from datetime import timedelta
+from pathlib import Path
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,6 +35,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'django_filters',
+    'rest_framework_simplejwt',
 
     'api.user',
     'api.products',
@@ -39,6 +43,7 @@ INSTALLED_APPS = [
     'api.cart',
     'api.order',
     'api.payment',
+    'api.auth',
 ]
 
 MIDDLEWARE = [
@@ -137,6 +142,9 @@ AUTH_USER_MODEL = 'api_user.User'
 
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.LimitOffsetPagination',
@@ -147,3 +155,9 @@ REST_FRAMEWORK = {
 
 YOOKASSA_SECRET_KEY = env.str("YOOKASSA_SECRET_KEY")
 YOOKASSA_ACCOUNT_ID = env.int("YOOKASSA_ACCOUNT_ID")
+
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=20),
+}

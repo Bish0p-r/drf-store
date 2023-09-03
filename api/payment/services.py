@@ -6,6 +6,7 @@ from yookassa import Configuration, Payment
 
 from api.order.models import Order
 from api.user.models import User
+from api.products.models import Size
 
 
 def yookassa_create_order(data):
@@ -29,7 +30,7 @@ def yookassa_create_order(data):
 
     payment = Payment.create({
         "amount": {
-            "value": f"{value}.00",
+            "value": f"{value}",
             "currency": "RUB"
         },
         "confirmation": {
@@ -55,6 +56,13 @@ def payment_acceptance(response):
 
     if response['event'] == 'payment.succeeded':
         order.status = 1
+
+        for data in order.cart_history.values():
+            product_size_id = data['product']['id']
+            product_size_quantity = data['product']['quantity']
+            product = Size.objects.get_object_by_public_id(product_size_id)
+            product.quantity -= int(product_size_quantity)
+            product.save()
         order.save()
 
     elif response['event'] == 'payment.canceled':
@@ -62,4 +70,3 @@ def payment_acceptance(response):
         order.save()
 
     return True
-
