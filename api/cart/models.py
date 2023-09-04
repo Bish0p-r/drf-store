@@ -18,7 +18,8 @@ class Cart(AbstractModel):
         data = {
             "total_price": float(self.sum()),
             "product": {
-                "id": str(self.product_size.public_id),
+                "product_id": str(self.product_size.product.public_id),
+                "size_id": str(self.product_size.public_id),
                 "name": self.product_size.product.name,
                 "size": self.product_size.name,
                 "quantity": float(self.quantity),

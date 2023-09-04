@@ -17,4 +17,16 @@ class UserSerializer(AbstractSerializer):
             'bio', 'avatar', 'email', 'is_active', 'created',
             'updated', 'wishlist', 'carts', 'orders',
         )
-        read_only_field = ['is_active']
+        read_only_field = (
+            'is_active', 'created', 'updated', 'wishlist',
+            'carts', 'orders', 'id', 'username', 'email',
+        )
+
+
+class BaseUserSerializer(AbstractSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id', 'username', 'first_name', 'last_name',
+            'bio', 'avatar', 'created',
+        )

@@ -2,6 +2,7 @@ import json
 
 from rest_framework import status
 from rest_framework.generics import CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.cart.models import Cart
@@ -12,6 +13,7 @@ from api.payment.services import yookassa_create_order, payment_acceptance
 
 class CreatePaymentView(CreateAPIView):
     serializer_class = CreatePaymentSerializer
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         cart = Cart.objects.filter(user__public_id=request.POST['id'])

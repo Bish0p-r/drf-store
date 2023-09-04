@@ -50,6 +50,7 @@ class User(AbstractModel, AbstractBaseUser, PermissionsMixin):
     avatar = models.ImageField(null=True, blank=True)
 
     wishlist = models.ManyToManyField(to=Product, related_name='wishlist_by', blank=True)
+    products_bought = models.ManyToManyField(to=Product, related_name='products_bought_by', blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -66,6 +67,9 @@ class User(AbstractModel, AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_superuser
+    #
+    # def can_add_review(self, product_id):
+    #     return any(i.already_delivered(product_id) for i in self.orders.all())
 
     def add_to_wishlist(self, product):
         return self.wishlist.add(product)

@@ -12,10 +12,10 @@ from api.cart.models import Cart
 
 class ProductViewSet(AbstractViewSet):
     serializer_class = ProductSerializer
-    filter_backends = [filters.OrderingFilter]
     ordering_fields = ['created']
     ordering = ['-created']
     lookup_field = 'public_id'
+    http_method_names = ('get', 'post')
 
     def get_queryset(self):
         return Product.objects.all()
@@ -23,11 +23,9 @@ class ProductViewSet(AbstractViewSet):
     def get_object(self):
         obj = Product.objects.get_object_by_public_id(self.kwargs['public_id'])
 
-        self.check_object_permissions(self.request, obj)
-
         return obj
 
-    @action(methods=['post'], detail=True)
+    @action(methods=['post'], detail=True, permission_classes=[IsAuthenticated])
     def add_to_wishlist(self, request, *args, **kwargs):
         product = self.get_object()
         user = self.request.user
@@ -38,7 +36,7 @@ class ProductViewSet(AbstractViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(methods=['post'], detail=True)
+    @action(methods=['post'], detail=True, permission_classes=[IsAuthenticated])
     def remove_from_wishlist(self, request, *args, **kwargs):
         product = self.get_object()
         user = self.request.user
@@ -54,6 +52,7 @@ class SizeViewSet(viewsets.ModelViewSet):
     serializer_class = SizeSerializer
     filter_backends = [filters.OrderingFilter]
     lookup_field = 'public_id'
+    http_method_names = ('get', 'post')
 
     def get_queryset(self):
         return Size.objects.filter(product__public_id=self.kwargs['product_public_id'])

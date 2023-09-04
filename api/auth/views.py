@@ -12,7 +12,7 @@ from api.auth.serializers import RegisterSerializer, LoginSerializer
 class RegisterViewSet(ViewSet):
     serializer_class = RegisterSerializer
     permission_classes = (AllowAny,)
-    http_method_names = ['post']
+    http_method_names = ('post',)
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -35,7 +35,7 @@ class RegisterViewSet(ViewSet):
 class LoginViewSet(ViewSet):
     serializer_class = LoginSerializer
     permission_classes = (AllowAny,)
-    http_method_names = ['post']
+    http_method_names = ('post',)
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -50,7 +50,7 @@ class LoginViewSet(ViewSet):
 
 class RefreshViewSet(viewsets.ViewSet, TokenRefreshView):
     permission_classes = (AllowAny,)
-    http_method_names = ['post']
+    http_method_names = ('post',)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

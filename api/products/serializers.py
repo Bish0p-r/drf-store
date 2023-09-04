@@ -6,7 +6,7 @@ from api.reviews.serializers import ReviewSerializer
 class ProductCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductCategory
-        fields = '__all__'
+        fields = ('name',)
 
 
 class BrandSerializer(serializers.ModelSerializer):

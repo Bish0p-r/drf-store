@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 
 class CreatePaymentSerializer(serializers.Serializer):
-    id = serializers.UUIDField(format='hex')
+    id = serializers.UUIDField(format='hex', required=True)
     return_url = serializers.CharField(max_length=128)
     first_name = serializers.CharField(max_length=64)
     last_name = serializers.CharField(max_length=64)

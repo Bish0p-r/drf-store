@@ -26,6 +26,9 @@ class Order(AbstractModel):
 
     initiator = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='orders')
 
+    def already_delivered(self, product_id):
+        return self.status == Order.DELIVERED and self.cart_history["product"]["product_id"] == product_id
+
     @property
     def total_sum(self):
         return sum(i.sum() for i in self.initiator.carts.all())

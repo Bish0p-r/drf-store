@@ -6,7 +6,7 @@ from yookassa import Configuration, Payment
 
 from api.order.models import Order
 from api.user.models import User
-from api.products.models import Size
+from api.products.models import Product, Size
 
 
 def yookassa_create_order(data):
@@ -20,7 +20,13 @@ def yookassa_create_order(data):
     address = data.get('address')
 
     user = User.objects.get(public_id=user_id)
-    cart_history = {str(i.public_id): i.to_json() for i in user.carts.all()}
+    cart_history = dict()
+    # cart_history = {str(i.public_id): i.to_json() for i in user.carts.all()}
+
+    for i in user.carts.all():
+        value = i.to_json()
+        user.products_bought.add(Product.objects.get_object_by_public_id(value['product']['product_id']))
+        cart_history[str(i.public_id)] = value
 
     order = Order.objects.create(
         initiator=user, cart_history=cart_history, first_name=first_name, last_name=last_name, address=address
@@ -58,7 +64,7 @@ def payment_acceptance(response):
         order.status = 1
 
         for data in order.cart_history.values():
-            product_size_id = data['product']['id']
+            product_size_id = data['product']['size_id']
             product_size_quantity = data['product']['quantity']
             product = Size.objects.get_object_by_public_id(product_size_id)
             product.quantity -= int(product_size_quantity)
