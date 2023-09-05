@@ -67,9 +67,6 @@ class User(AbstractModel, AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_superuser
-    #
-    # def can_add_review(self, product_id):
-    #     return any(i.already_delivered(product_id) for i in self.orders.all())
 
     def add_to_wishlist(self, product):
         return self.wishlist.add(product)

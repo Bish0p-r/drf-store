@@ -48,11 +48,11 @@ class ProductViewSet(AbstractViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class SizeViewSet(viewsets.ModelViewSet):
+class SizeViewSet(AbstractViewSet):
     serializer_class = SizeSerializer
     filter_backends = [filters.OrderingFilter]
     lookup_field = 'public_id'
-    http_method_names = ('get', 'post')
+    http_method_names = ('get', 'post',)
 
     def get_queryset(self):
         return Size.objects.filter(product__public_id=self.kwargs['product_public_id'])

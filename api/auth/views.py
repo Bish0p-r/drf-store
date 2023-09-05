@@ -1,12 +1,12 @@
-from rest_framework import status, viewsets
-from rest_framework.permissions import AllowAny
+from rest_framework import status, viewsets, generics
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from api.auth.serializers import RegisterSerializer, LoginSerializer
+from api.auth.serializers import RegisterSerializer, LoginSerializer, ChangePasswordSerializer
 
 
 class RegisterViewSet(ViewSet):
@@ -61,3 +61,22 @@ class RefreshViewSet(viewsets.ViewSet, TokenRefreshView):
             raise InvalidToken(e.args[0])
 
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            self.request.user.set_password(serializer.validated_data['password1'])
+            self.request.user.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+

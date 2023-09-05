@@ -21,12 +21,16 @@ class Product(AbstractModel):
     sex = models.CharField(max_length=10, choices=SEX_CHOICES, default='U')
 
     @property
-    def total_rating(self):
-        return sum(i.rating for i in self.reviews.all())
+    def avg_rating(self):
+        return sum(i.rating for i in self.reviews.all()) / self.total_reviews
 
     @property
     def total_reviews(self):
         return len(self.reviews.all())
+
+    @property
+    def is_available(self):
+        return self.sizes.filter(quantity__gt=0).exists()
 
     def __str__(self):
         return self.name

@@ -40,5 +40,5 @@ class ProductSerializer(serializers.ModelSerializer):
             'public_id', 'name', 'price', 'article',
             'description', 'created', 'image',  'slug',
             'sex', 'category', 'brands', 'sizes', 'gallery',
-            'total_reviews', 'total_rating', 'reviews',
+            'total_reviews', 'avg_rating', 'reviews',
                   )

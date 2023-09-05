@@ -24,9 +24,9 @@ def yookassa_create_order(data):
     # cart_history = {str(i.public_id): i.to_json() for i in user.carts.all()}
 
     for i in user.carts.all():
-        value = i.to_json()
-        user.products_bought.add(Product.objects.get_object_by_public_id(value['product']['product_id']))
-        cart_history[str(i.public_id)] = value
+        # value = i.to_json()
+        # user.products_bought.add(Product.objects.get_object_by_public_id(value['product']['product_id']))
+        cart_history[str(i.public_id)] = i.to_json()
 
     order = Order.objects.create(
         initiator=user, cart_history=cart_history, first_name=first_name, last_name=last_name, address=address
@@ -62,12 +62,14 @@ def payment_acceptance(response):
 
     if response['event'] == 'payment.succeeded':
         order.status = 1
+        user = order.initiator
 
         for data in order.cart_history.values():
             product_size_id = data['product']['size_id']
             product_size_quantity = data['product']['quantity']
             product = Size.objects.get_object_by_public_id(product_size_id)
             product.quantity -= int(product_size_quantity)
+            user.products_bought.add(Product.objects.get_object_by_public_id(data['product']['product_id']))
             product.save()
         order.save()
 

@@ -28,3 +28,21 @@ class LoginSerializer(TokenObtainPairSerializer):
         data['access'] = str(refresh.access_token)
 
         return data
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    password1 = serializers.CharField(required=True)
+    password2 = serializers.CharField(required=True)
+    old_password = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        if attrs['password1'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+        return attrs
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError({"old_password": "Old password is not correct"})
+        return value
+

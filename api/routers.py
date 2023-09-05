@@ -1,17 +1,18 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework_nested import routers
 from api.user.views import UserViewSet
 from api.products.views import ProductViewSet, SizeViewSet
 from api.reviews.views import ReviewViewSet
 from api.order.views import OrderViewSet
 from api.payment.views import CreatePaymentView, CreatePaymentAcceptanceView
-from api.auth.views import RegisterViewSet, LoginViewSet, RefreshViewSet
+from api.auth.views import RegisterViewSet, LoginViewSet, RefreshViewSet, ChangePasswordView
 
 router = routers.SimpleRouter()
 
-router.register(r'auth/register', RegisterViewSet, basename='auth-register')
-router.register(r'auth/login', LoginViewSet, basename='auth-login')
-router.register(r'auth/refresh', RefreshViewSet, basename='auth-refresh')
+# router.register(r'auth/register', RegisterViewSet, basename='auth-register')
+# router.register(r'auth/login', LoginViewSet, basename='auth-login')
+# router.register(r'auth/refresh', RefreshViewSet, basename='auth-refresh')
+# router.register(r'auth/change-password', ChangePasswordView, basename='auth-change-password')
 
 router.register(r'user', UserViewSet, basename='user')
 
@@ -32,4 +33,8 @@ urlpatterns = [
     *review_router.urls,
     path('create_payment', CreatePaymentView.as_view()),
     path('payment_acceptance', CreatePaymentAcceptanceView.as_view()),
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.jwt')),
+    # path('auth/change-password', ChangePasswordView.as_view()),
+
 ]

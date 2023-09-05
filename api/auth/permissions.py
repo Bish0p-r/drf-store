@@ -14,6 +14,7 @@ class UserPermission(BasePermission):
     def has_permission(self, request, view):
         if request.user.is_anonymous:
             return request.method in SAFE_METHODS
+
         if view.basename in ["product-review"]:
             if request.method in ['POST', 'DELETE', 'PATCH']:
                 product_id = request.parser_context["kwargs"]["product_public_id"]
