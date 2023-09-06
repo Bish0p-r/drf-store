@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'djoser',
     'django_filters',
     'rest_framework_simplejwt',
+    'drf_spectacular',
 
     'api.user',
     'api.products',
@@ -150,6 +151,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.LimitOffsetPagination',
         'PAGE_SIZE': 15,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 # Yookassa

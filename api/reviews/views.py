@@ -19,11 +19,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return Review.objects.filter(product__public_id=self.kwargs['product_public_id'])
 
     def get_object(self):
-        obj = Review.objects.get_object_by_public_id(self.kwargs['public_id'])
-
-        # self.check_object_permissions(self.request, obj)
-
-        return obj
+        return Review.objects.get_object_by_public_id(self.kwargs['public_id'])
 
     def create(self, request, *args, **kwargs):
         self.check_permissions(request)

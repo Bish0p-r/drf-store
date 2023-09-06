@@ -13,21 +13,24 @@ class ReviewSerializer(AbstractSerializer):
     product = serializers.SlugRelatedField(queryset=Product.objects.all(), slug_field='public_id')
 
     def validate_author(self, value):
+        """Валидация пользователя по публичному идентификатору."""
         if self.context["request"].user != value:
             raise ValidationError("You can't create a post for another user.")
-
-        elif Review.objects.filter(
+        # Проверка писал ли пользователь отзыв для этого товара.
+        elif self.context["request"].method == 'POST' and Review.objects.filter(
                 author__public_id=self.context["request"].data['author'],
                 product__public_id=self.context["request"].data['product']
         ).exists():
             raise ValidationError("You have already written a review.")
 
         return value
-    #
-    # def validate_product(self, value):
-    #     if self.instance:
-    #         return self.instance.product
-    #     return value
+
+    def validate_product(self, value):
+        """Валидация продукта по публичному идентификатору продукта в теле запроса и URL запроса."""
+        request = self.context['request']
+        if request.data['product'] != request.parser_context['kwargs']['product_public_id']:
+            raise ValidationError("You can't create a review for another product.")
+        return value
 
     class Meta:
         model = Review

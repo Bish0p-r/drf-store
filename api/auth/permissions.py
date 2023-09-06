@@ -16,9 +16,10 @@ class UserPermission(BasePermission):
             return request.method in SAFE_METHODS
 
         if view.basename in ["product-review"]:
-            if request.method in ['POST', 'DELETE', 'PATCH']:
+            if request.method in ['DELETE', 'PATCH', 'PUT', 'POST']:
                 product_id = request.parser_context["kwargs"]["product_public_id"]
-                return bool(request.user.products_bought.filter(public_id=product_id).exists())
+                return bool(request.user.is_superuser
+                            or request.user.products_bought.filter(public_id=product_id).exists())
 
             return bool(request.user and request.user.is_authenticated)
 

@@ -5,7 +5,7 @@ from api.products.views import ProductViewSet, SizeViewSet
 from api.reviews.views import ReviewViewSet
 from api.order.views import OrderViewSet
 from api.payment.views import CreatePaymentView, CreatePaymentAcceptanceView
-from api.auth.views import RegisterViewSet, LoginViewSet, RefreshViewSet, ChangePasswordView
+
 
 router = routers.SimpleRouter()
 
