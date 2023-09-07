@@ -9,6 +9,9 @@ class UserPermission(BasePermission):
         if view.basename in ["user"]:
             return bool(request.user.is_authenticated and request.user == obj or request.user.is_superuser)
 
+        if view.basename in ["order"]:
+            return bool(request.user.is_authenticated and request.user == obj. initiator)
+
         return False
 
     def has_permission(self, request, view):
@@ -21,6 +24,7 @@ class UserPermission(BasePermission):
                 return bool(request.user.is_superuser
                             or request.user.products_bought.filter(public_id=product_id).exists())
 
-            return bool(request.user and request.user.is_authenticated)
+        if view.basename in ["order"]:
+            return bool(request.user.is_authenticated)
 
         return False

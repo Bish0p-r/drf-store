@@ -13,10 +13,11 @@ from api.auth.permissions import UserPermission
 
 class UserViewSet(AbstractViewSet):
     http_method_names = ('patch', 'get',)
-    permission_classes = (UserPermission,)
+    permission_classes = (IsAuthenticated,)
     lookup_field = 'public_id'
 
     def get_serializer_class(self):
+        """Получение сериалайзера в зависимости кем является пользователь."""
         if self.request.user.is_superuser:
             return UserSerializer
         if self.serializer_class:
@@ -30,12 +31,14 @@ class UserViewSet(AbstractViewSet):
 
     def get_object(self):
         obj = User.objects.get_object_by_public_id(self.kwargs['public_id'])
+        # Установка более расширенного сериалайзера если пользователь запрашивает свой профиль.
         if self.request.user == obj:
             self.serializer_class = UserSerializer
         self.check_object_permissions(self.request, obj)
         return obj
 
     def partial_update(self, request, *args, **kwargs):
+        """Метод запроса PATCH, частично заменяющий атрибуты пользователя."""
         instance = self.get_object()
         self.check_object_permissions(self.request, instance)
         serializer = self.get_serializer_class()(instance, data=request.data, partial=True)
@@ -45,6 +48,7 @@ class UserViewSet(AbstractViewSet):
 
     @action(methods=['post'], detail=True)
     def clean_cart(self, request, *args, **kwargs):
+        """Очистка корзины товаров пользователя."""
         user = self.request.user
         cart = Cart.objects.filter(user=user)
         serializer = self.serializer_class(user)

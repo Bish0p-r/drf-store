@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import filters, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -24,6 +25,7 @@ class ProductViewSet(AbstractViewSet):
 
         return obj
 
+    @extend_schema(summary='Добавить продукт в список желаний.', methods=["POST"])
     @action(methods=['post'], detail=True, permission_classes=[IsAuthenticated])
     def add_to_wishlist(self, request, *args, **kwargs):
         product = self.get_object()
@@ -65,6 +67,10 @@ class SizeViewSet(AbstractViewSet):
 
     @action(methods=['post'], detail=True,  permission_classes=[IsAuthenticated])
     def add_to_cart(self, request, *args, **kwargs):
+        """
+        Создание и добавление экземпляра продукта в корзину если корзины нет
+        или увеличение количества если товар уже есть в корзине.
+        """
         size = self.get_object()
         user = self.request.user
         quantity = int(request.data.get('quantity') or 1)
@@ -87,6 +93,9 @@ class SizeViewSet(AbstractViewSet):
 
     @action(methods=['post'], detail=True, permission_classes=[IsAuthenticated])
     def remove_from_cart(self, request, *args, **kwargs):
+        """
+        Удаление экземпляра продукта из корзины
+        """
         size = self.get_object()
         user = self.request.user
         quantity = int(request.data.get('quantity') or 1)

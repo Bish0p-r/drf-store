@@ -32,13 +32,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    # 3rd party apps.
     'rest_framework',
     'djoser',
     'django_filters',
     'rest_framework_simplejwt',
     'drf_spectacular',
-
+    'versatileimagefield',
+    # Local apps.
     'api.user',
     'api.products',
     'api.reviews',

@@ -1,4 +1,5 @@
 from django.db import models
+from versatileimagefield.fields import VersatileImageField
 
 from api.abstract.models import AbstractModel
 
@@ -11,18 +12,20 @@ class Product(AbstractModel):
     )
 
     name = models.CharField(max_length=256)
-    brands = models.ManyToManyField('Brand', related_name='brand')
     description = models.TextField(blank=True)
-    article = models.CharField(max_length=128, null=True, blank=True, unique=True)
     price = models.DecimalField(max_digits=8, decimal_places=0)
-    image = models.ImageField(upload_to='products_images')
-    category = models.ForeignKey('ProductCategory', on_delete=models.CASCADE)
+    image = VersatileImageField(null=True, blank=True, upload_to='products_images')
     slug = models.SlugField(max_length=130, unique=True, db_index=True)
     sex = models.CharField(max_length=10, choices=SEX_CHOICES, default='U')
 
+    category = models.ForeignKey('ProductCategory', on_delete=models.CASCADE)
+    brands = models.ManyToManyField('Brand', related_name='brand')
+
     @property
     def avg_rating(self):
-        return sum(i.rating for i in self.reviews.all()) / self.total_reviews
+        if self.total_reviews:
+            return sum(i.rating for i in self.reviews.all()) / self.total_reviews
+        return 0
 
     @property
     def total_reviews(self):
@@ -67,5 +70,9 @@ class Size(AbstractModel):
 
 
 class Gallery(models.Model):
-    image = models.ImageField(upload_to='gallery')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='gallery')
+    title = models.CharField(max_length=128, blank=True, null=True)
+    image = VersatileImageField(upload_to='gallery', blank=True, null=True)
+    product = models.ForeignKey(to=Product, on_delete=models.CASCADE, related_name='gallery')
+
+    def __str__(self):
+        return self.image.url

@@ -8,13 +8,12 @@ from rest_framework.response import Response
 from api.abstract.viewsets import AbstractViewSet
 from api.order.serializers import OrderSerializer
 from api.order.models import Order
-from api.cart.models import Cart
-from api.payment.services import yookassa_create_order
+from api.auth.permissions import UserPermission
 
 
 class OrderViewSet(AbstractViewSet):
     serializer_class = OrderSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (UserPermission,)
     http_method_names = ('get',)
     lookup_field = 'public_id'
 

@@ -9,6 +9,7 @@ from api.order.serializers import OrderSerializer
 class UserSerializer(AbstractSerializer):
     carts = CartSerializer(many=True)
     orders = OrderSerializer(many=True)
+    wishlist = serializers.SlugRelatedField(many=True, read_only=True, slug_field='name')
 
     class Meta:
         model = User
