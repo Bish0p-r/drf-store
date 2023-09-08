@@ -1,5 +1,6 @@
 import json
 
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -15,7 +16,12 @@ class CreatePaymentView(CreateAPIView):
     serializer_class = CreatePaymentSerializer
     permission_classes = (IsAuthenticated,)
 
+    @extend_schema(summary='Создать платеж через Yookassa.', methods=["POST"])
     def post(self, request, *args, **kwargs):
+        """
+        Создание заказа и ссылки для оплаты.
+        - POST /api/payment_create/
+        """
         cart = Cart.objects.filter(user__public_id=request.POST['id'])
 
         if not cart.exists():
@@ -34,7 +40,12 @@ class CreatePaymentView(CreateAPIView):
 
 
 class CreatePaymentAcceptanceView(CreateAPIView):
+    @extend_schema(summary='Получение уведомлений от Yookassa.', methods=["POST"])
     def post(self, request, *args, **kwargs):
+        """
+        Получение уведомлений от Yookassa и изменение статус заказа.
+        - POST /api/payment_acceptance/
+        """
         response = json.loads(request.body)
 
         if payment_acceptance(response):

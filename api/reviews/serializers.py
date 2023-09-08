@@ -14,7 +14,7 @@ class ReviewSerializer(AbstractSerializer):
 
     def validate_author(self, value):
         """Валидация пользователя по публичному идентификатору."""
-        if self.context["request"].user != value:
+        if not self.context["request"].user.is_superuser or self.context["request"].user != value :
             raise ValidationError("You can't create a post for another user.")
         # Проверка писал ли пользователь отзыв для этого товара.
         elif self.context["request"].method == 'POST' and Review.objects.filter(

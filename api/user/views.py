@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework import viewsets, status
@@ -11,13 +12,17 @@ from api.cart.models import Cart
 from api.auth.permissions import UserPermission
 
 
+@extend_schema_view(
+    list=extend_schema(summary="Получить список пользователей."),
+    retrieve=extend_schema(summary="Получить пользователя по public_id.")
+)
 class UserViewSet(AbstractViewSet):
     http_method_names = ('patch', 'get',)
     permission_classes = (IsAuthenticated,)
     lookup_field = 'public_id'
 
     def get_serializer_class(self):
-        """Получение сериалайзера в зависимости кем является пользователь."""
+        """Получение сериалайзера в зависимости от того кем является пользователь."""
         if self.request.user.is_superuser:
             return UserSerializer
         if self.serializer_class:
@@ -37,8 +42,12 @@ class UserViewSet(AbstractViewSet):
         self.check_object_permissions(self.request, obj)
         return obj
 
+    @extend_schema(summary="Изменить данные пользователя.", methods=["PATCH"])
     def partial_update(self, request, *args, **kwargs):
-        """Метод запроса PATCH, частично заменяющий атрибуты пользователя."""
+        """
+        Частичная замена атрибутов пользователя.
+        - PATCH /api/user/{public_id}/
+        """
         instance = self.get_object()
         self.check_object_permissions(self.request, instance)
         serializer = self.get_serializer_class()(instance, data=request.data, partial=True)
@@ -46,9 +55,13 @@ class UserViewSet(AbstractViewSet):
         serializer.save()
         return Response(serializer.data)
 
+    @extend_schema(summary="Очистить корзину пользователя.", methods=["POST"])
     @action(methods=['post'], detail=True)
     def clean_cart(self, request, *args, **kwargs):
-        """Очистка корзины товаров пользователя."""
+        """
+        Очистка корзины товаров пользователя.
+        - POST /api/user/{public_id}/clean_cart/
+        """
         user = self.request.user
         cart = Cart.objects.filter(user=user)
         serializer = self.serializer_class(user)

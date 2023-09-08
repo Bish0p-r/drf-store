@@ -1,5 +1,6 @@
 import json
 
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -11,6 +12,10 @@ from api.order.models import Order
 from api.auth.permissions import UserPermission
 
 
+@extend_schema_view(
+    list=extend_schema(summary="Получить список заказов."),
+    retrieve=extend_schema(summary="Получить заказ по public_id.")
+)
 class OrderViewSet(AbstractViewSet):
     serializer_class = OrderSerializer
     permission_classes = (UserPermission,)

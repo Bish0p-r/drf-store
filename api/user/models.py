@@ -47,7 +47,7 @@ class User(AbstractModel, AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
 
     bio = models.TextField(null=True, blank=True)
-    avatar = models.ImageField(null=True, blank=True)
+    avatar = models.ImageField(null=True, blank=True, upload_to='avatars')
 
     wishlist = models.ManyToManyField(to=Product, related_name='wishlist_by', blank=True)
     products_bought = models.ManyToManyField(to=Product, related_name='products_bought_by', blank=True)
