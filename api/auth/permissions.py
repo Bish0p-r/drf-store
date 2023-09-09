@@ -13,7 +13,12 @@ class UserPermission(BasePermission):
             return bool(request.user.is_authenticated and request.user == obj.initiator)
 
         if view.basename in ["product-review"]:
-            return bool(request.user.is_authenticated and request.user == obj.author)
+            if request.method in ['POST']:
+                return bool(request.user.is_superuser or
+                            request.user.products_bought.filter(public_id=obj.public_id).exists()
+                            )
+            if request.method in ['PATCH']:
+                return bool(request.user.is_superuser or request.user == obj.author)
 
         return False
 
@@ -23,11 +28,7 @@ class UserPermission(BasePermission):
 
         if view.basename in ["product-review"]:
             if request.method in ['DELETE', 'PATCH', 'PUT', 'POST']:
-                product_id = request.parser_context["kwargs"]["product_public_id"]
-                return bool(request.user.is_superuser
-                            or request.user.products_bought.filter(public_id=product_id).exists())
-            else:
-                return request.method in SAFE_METHODS
+                return request.user.is_authenticated
 
         if view.basename in ["order"]:
             return bool(request.user.is_authenticated)

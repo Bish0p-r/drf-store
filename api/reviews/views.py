@@ -1,7 +1,7 @@
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets, status
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 
 from api.reviews.serializers import ReviewSerializer
 from api.reviews.models import Review
@@ -17,7 +17,6 @@ from api.products.models import Product
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (UserPermission,)
-    # http_method_names = ('POST', 'GET', 'PATCH', 'DELETE',)
     http_method_names = ('post', 'get', 'patch', 'delete',)
     lookup_field = 'public_id'
 
@@ -34,9 +33,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
         Создание отзыва на товар при условие что пользователь уже купил его.
         - POST /api/product/{public_id}/review/
         """
-        self.check_permissions(request)
-
         serializer = self.get_serializer(data=request.data)
+
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
 
@@ -49,14 +47,27 @@ class ReviewViewSet(viewsets.ModelViewSet):
         - PATCH /api/product/{product_public_id}/review/{public_id}/
         """
         instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
 
         self.check_object_permissions(self.request, instance)
-        serializer = self.get_serializer_class()(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
         return Response(serializer.data)
 
+    def perform_create(self, serializer):
+        """
+        Метод проверяющий писал ли пользователь отзыв на товар или нет,
+        после чего присваивает модель пользователя и товара к модели отзыва и сохраняет ее.
+        """
+        product = Product.objects.get_object_by_public_id(self.kwargs['product_public_id'])
+        self.check_object_permissions(self.request, product)
 
+        # Проверка писал ли пользователь отзыв для этого товара.
+        if not self.request.user.is_superuser and Review.objects.filter(
+                author=self.request.user, product=product).exists():
+            raise ValidationError("You have already written a review for this product.")
+
+        serializer.save(author=self.request.user, product=product)
 
 
