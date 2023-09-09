@@ -16,7 +16,8 @@ class SizeInline(admin.TabularInline):
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('name',)}
+    pass
+    # prepopulated_fields = {'slug': ('name',)}
 
 
 @admin.register(Product)
@@ -25,10 +26,11 @@ class ProductAdmin(admin.ModelAdmin):
     filter_horizontal = ('brands',)
     list_display_links = ('name', 'category')
     search_fields = ('name', 'category')
-    prepopulated_fields = {'slug': ('name',)}
+    # prepopulated_fields = {'slug': ('name',)}
     inlines = [GalleryInline, SizeInline, ReviewInline]
 
 
 @admin.register(ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('name',)}
+    pass
+    # prepopulated_fields = {'slug': ('name',)}

@@ -29,7 +29,6 @@ class ProductViewSet(mixins.RetrieveModelMixin,
     def get_queryset(self):
         return Product.objects.all()
 
-    # @extend_schema(summary='Получить продукт по public_id.', methods=["GET"])
     def get_object(self):
         obj = Product.objects.get_object_by_public_id(self.kwargs["public_id"])
         return obj

@@ -1,21 +1,23 @@
 from django.db import models
 from versatileimagefield.fields import VersatileImageField
+from django.utils.text import slugify
 
 from api.abstract.models import AbstractModel
 
 
-class Product(AbstractModel):
-    SEX_CHOICES = (
-        ('M', 'Mens'),
-        ('W', 'Womens'),
-        ('U', 'Unisex'),
-    )
+SEX_CHOICES = (
+    ('M', 'Mens'),
+    ('W', 'Womens'),
+    ('U', 'Unisex'),
+)
 
+
+class Product(AbstractModel):
     name = models.CharField(max_length=256)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=8, decimal_places=0)
     image = VersatileImageField(null=True, blank=True, upload_to='products_images')
-    slug = models.SlugField(max_length=130, unique=True, db_index=True)
+    # slug = models.SlugField(max_length=130, unique=True, db_index=True)
     sex = models.CharField(max_length=10, choices=SEX_CHOICES, default='U')
 
     category = models.ForeignKey('ProductCategory', on_delete=models.CASCADE)
@@ -35,6 +37,14 @@ class Product(AbstractModel):
     def is_available(self):
         return self.sizes.filter(quantity__gt=0).exists()
 
+    # def save(self, *args, **kwargs):
+    #     self.slug = slugify(self.name)
+    #
+    #     while Product.objects.filter(slug=self.slug).exists():
+    #         self.slug += '-1'
+    #
+    #     super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -42,11 +52,19 @@ class Product(AbstractModel):
 class ProductCategory(models.Model):
     name = models.CharField(max_length=128)
     description = models.TextField(null=True, blank=True)
-    slug = models.SlugField(max_length=130, unique=True, db_index=True)
+    # slug = models.SlugField(max_length=130, unique=True, db_index=True)
 
     class Meta:
         verbose_name = 'category'
         verbose_name_plural = 'categories'
+
+    # def save(self, *args, **kwargs):
+    #     self.slug = slugify(self.name)
+    #
+    #     while Product.objects.filter(slug=self.slug).exists():
+    #         self.slug += '-1'
+    #
+    #     super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -54,7 +72,15 @@ class ProductCategory(models.Model):
 
 class Brand(models.Model):
     name = models.CharField(max_length=128)
-    slug = models.SlugField(max_length=130, unique=True, db_index=True)
+    # slug = models.SlugField(max_length=130, unique=True, db_index=True)
+    #
+    # def save(self, *args, **kwargs):
+    #     self.slug = slugify(self.name)
+    #
+    #     while Product.objects.filter(slug=self.slug).exists():
+    #         self.slug += '-1'
+    #
+    #     super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name

@@ -10,6 +10,7 @@ from api.products.models import Product, Size
 
 
 def yookassa_create_order(data):
+    """Оформление оплаты Yookassa."""
     Configuration.account_id = settings.YOOKASSA_ACCOUNT_ID
     Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
 
@@ -21,11 +22,8 @@ def yookassa_create_order(data):
 
     user = User.objects.get(public_id=user_id)
     cart_history = dict()
-    # cart_history = {str(i.public_id): i.to_json() for i in user.carts.all()}
 
     for i in user.carts.all():
-        # value = i.to_json()
-        # user.products_bought.add(Product.objects.get_object_by_public_id(value['product']['product_id']))
         cart_history[str(i.public_id)] = i.to_json()
 
     order = Order.objects.create(
@@ -54,6 +52,7 @@ def yookassa_create_order(data):
 
 
 def payment_acceptance(response):
+    """Изменение статуса заказа в зависимости от статуса оплаты."""
     try:
         order = Order.objects.get(public_id=response['object']['metadata']['order_public_id'])
 

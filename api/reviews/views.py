@@ -64,10 +64,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
         self.check_object_permissions(self.request, product)
 
         # Проверка писал ли пользователь отзыв для этого товара.
-        if not self.request.user.is_superuser and Review.objects.filter(
+        if self.request.user.is_superuser and Review.objects.filter(
                 author=self.request.user, product=product).exists():
-            raise ValidationError("You have already written a review for this product.")
-
-        serializer.save(author=self.request.user, product=product)
-
-
+            raise ValidationError({"rejection": "You have already written a review for this product."})
+        else:
+            serializer.save(author=self.request.user, product=product)
