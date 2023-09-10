@@ -14,4 +14,4 @@ class ReviewSerializer(AbstractSerializer):
 
     class Meta:
         model = Review
-        fields = ('id', 'author_public_id', 'product_public_id', 'rating', 'text')
+        fields = ('public_id', 'author_public_id', 'product_public_id', 'rating', 'text')

@@ -12,7 +12,6 @@ from api.products.models import Product
 @extend_schema_view(
     list=extend_schema(summary="Получить список отзывов на товар."),
     retrieve=extend_schema(summary="Получить отзыв по public_id."),
-    destroy=extend_schema(summary="Удалить отзыв по public_id."),
 )
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
@@ -64,8 +63,19 @@ class ReviewViewSet(viewsets.ModelViewSet):
         self.check_object_permissions(self.request, product)
 
         # Проверка писал ли пользователь отзыв для этого товара.
-        if self.request.user.is_superuser and Review.objects.filter(
+        if not self.request.user.is_superuser and Review.objects.filter(
                 author=self.request.user, product=product).exists():
             raise ValidationError({"rejection": "You have already written a review for this product."})
         else:
             serializer.save(author=self.request.user, product=product)
+
+    @extend_schema(summary='Удалить отзыв.', methods=["DELETE"])
+    def destroy(self, request, *args, **kwargs):
+        """
+        Удаление отзыва.
+        - DELETE /api/product/{product_public_id}/review/{public_id}/
+        """
+        instance = self.get_object()
+        self.check_object_permissions(self.request, instance)
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
