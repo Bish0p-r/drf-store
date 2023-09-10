@@ -3,11 +3,9 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 class UserPermission(BasePermission):
     def has_object_permission(self, request, view, obj):
-        if request.user.is_anonymous:
-            return request.method in SAFE_METHODS
 
         if view.basename in ["user"]:
-            return bool(request.user.is_authenticated and request.user == obj or request.user.is_superuser)
+            return bool((request.user.is_authenticated and request.user == obj) or request.user.is_superuser)
 
         if view.basename in ["order"]:
             return bool(request.user.is_authenticated and request.user == obj.initiator)
@@ -20,11 +18,12 @@ class UserPermission(BasePermission):
             if request.method in ['PATCH']:
                 return bool(request.user.is_superuser or request.user == obj.author)
 
+        if request.user.is_anonymous:
+            return request.method in SAFE_METHODS
+
         return False
 
     def has_permission(self, request, view):
-        if request.user.is_anonymous:
-            return request.method in SAFE_METHODS
 
         if view.basename in ["product-review"]:
             if request.method in ['DELETE', 'PATCH', 'PUT', 'POST']:
@@ -32,5 +31,11 @@ class UserPermission(BasePermission):
 
         if view.basename in ["order"]:
             return bool(request.user.is_authenticated)
+
+        if view.basename in ["user"]:
+            return bool(request.user.is_authenticated)
+
+        if request.user.is_anonymous:
+            return request.method in SAFE_METHODS
 
         return False

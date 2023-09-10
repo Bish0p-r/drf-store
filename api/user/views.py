@@ -1,9 +1,10 @@
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 from django.db.models import Q
+from rest_framework.viewsets import GenericViewSet
 
 from api.user.serializers import UserSerializer, BaseUserSerializer
 from api.user.models import User
@@ -16,9 +17,12 @@ from api.auth.permissions import UserPermission
     list=extend_schema(summary="Получить список пользователей."),
     retrieve=extend_schema(summary="Получить пользователя по public_id.")
 )
-class UserViewSet(AbstractViewSet):
-    http_method_names = ('patch', 'get',)
-    permission_classes = (IsAuthenticated,)
+class UserViewSet(mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.ListModelMixin,
+                  GenericViewSet):
+    http_method_names = ('patch', 'get', 'post')
+    permission_classes = (UserPermission,)
     lookup_field = 'public_id'
 
     def get_serializer_class(self):
@@ -39,7 +43,7 @@ class UserViewSet(AbstractViewSet):
         # Установка более расширенного сериалайзера если пользователь запрашивает свой профиль.
         if self.request.user == obj:
             self.serializer_class = UserSerializer
-        self.check_object_permissions(self.request, obj)
+        # self.check_object_permissions(self.request, obj)
         return obj
 
     @extend_schema(summary="Изменить данные пользователя.", methods=["PATCH"])
@@ -62,8 +66,9 @@ class UserViewSet(AbstractViewSet):
         Очистка корзины товаров пользователя.
         - POST /api/user/{public_id}/clean_cart/
         """
-        user = self.request.user
-        cart = Cart.objects.filter(user=user)
-        serializer = self.serializer_class(user)
+        instance = self.get_object()
+        self.check_object_permissions(self.request, instance)
+        cart = Cart.objects.filter(user=instance)
+        serializer = self.get_serializer_class()(instance)
         cart.delete()
         return Response(serializer.data, status=status.HTTP_200_OK)

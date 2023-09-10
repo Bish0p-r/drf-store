@@ -35,5 +35,5 @@ def test_create_superuser():
     assert user.email == data_superuser["email"]
     assert user.first_name == data_superuser["first_name"]
     assert user.last_name == data_superuser["last_name"]
-    assert user.is_superuser == True
-    assert user.is_staff == True
+    assert user.is_superuser
+    assert user.is_staff

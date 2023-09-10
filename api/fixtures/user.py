@@ -10,6 +10,14 @@ data_user = {
     "password": "test_password"
 }
 
+data_user_variation = {
+    "username": "test_user_variation",
+    "email": "testvariation@gmail.com",
+    "first_name": "Test_variation",
+    "last_name": "User_variation",
+    "password": "test_password_variation"
+}
+
 data_superuser = {
     "username": "test_superuser",
     "email": "testsuperuser@gmail.com",
@@ -22,6 +30,11 @@ data_superuser = {
 @pytest.fixture
 def user(db) -> User:
     return User.objects.create_user(**data_user)
+
+
+@pytest.fixture
+def user_variation(db) -> User:
+    return User.objects.create_user(**data_user_variation)
 
 
 @pytest.fixture
