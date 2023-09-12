@@ -156,7 +156,6 @@ REST_FRAMEWORK = {
 }
 
 # Yookassa
-
 YOOKASSA_SECRET_KEY = env.str("YOOKASSA_SECRET_KEY")
 YOOKASSA_ACCOUNT_ID = env.int("YOOKASSA_ACCOUNT_ID")
 
@@ -171,6 +170,7 @@ EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = env.int("EMAIL_PORT")
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS")
 
+
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
@@ -180,7 +180,15 @@ DJOSER = {
     'SERIALIZERS': {},
 }
 
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=10),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=20),
+}
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Store API',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
