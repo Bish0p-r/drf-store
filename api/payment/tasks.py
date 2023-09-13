@@ -1,6 +1,9 @@
 from celery import shared_task
 from django.conf import settings
 from django.core.mail import send_mail
+from django.utils import timezone
+
+from api.payment.models import Coupon
 
 
 @shared_task
@@ -18,3 +21,11 @@ def send_order_status_notification(email, order_id, status):
         [email],
         fail_silently=False,
     )
+
+
+@shared_task
+def coupon_deactivation():
+    expired_coupons = Coupon.objects.filter(is_active=True, expired_at__lte=timezone.now())
+    expired_coupons.update(is_active=False)
+
+

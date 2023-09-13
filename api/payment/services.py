@@ -8,6 +8,7 @@ from api.order.models import Order
 from api.user.models import User
 from api.products.models import Product, Size
 from api.payment.tasks import send_order_status_notification
+from api.payment.models import Coupon
 
 
 def yookassa_create_order(data):
@@ -20,6 +21,7 @@ def yookassa_create_order(data):
     first_name = data.get('first_name')
     last_name = data.get('last_name')
     address = data.get('address')
+    coupon = data.get('coupon')
 
     user = User.objects.get(public_id=user_id)
     cart_history = dict()
@@ -35,7 +37,11 @@ def yookassa_create_order(data):
         address=address
     )
 
-    value = order.total_sum
+    if coupon:
+        discount = Coupon.objects.get(code=coupon).amount_discount
+        value = (order.total_sum / 100) * discount
+    else:
+        value = order.total_sum
 
     payment = Payment.create({
         "amount": {

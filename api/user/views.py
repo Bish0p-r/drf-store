@@ -43,7 +43,6 @@ class UserViewSet(mixins.RetrieveModelMixin,
         # Установка более расширенного сериалайзера если пользователь запрашивает свой профиль.
         if self.request.user == obj:
             self.serializer_class = UserSerializer
-        # self.check_object_permissions(self.request, obj)
         return obj
 
     @extend_schema(summary="Изменить данные пользователя.", methods=["PATCH"])
