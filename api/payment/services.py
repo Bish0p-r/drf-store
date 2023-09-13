@@ -7,6 +7,7 @@ from yookassa import Configuration, Payment
 from api.order.models import Order
 from api.user.models import User
 from api.products.models import Product, Size
+from api.payment.tasks import send_order_status_notification
 
 
 def yookassa_create_order(data):
@@ -27,7 +28,11 @@ def yookassa_create_order(data):
         cart_history[str(i.public_id)] = i.to_json()
 
     order = Order.objects.create(
-        initiator=user, cart_history=cart_history, first_name=first_name, last_name=last_name, address=address
+        initiator=user,
+        cart_history=cart_history,
+        first_name=first_name,
+        last_name=last_name,
+        address=address
     )
 
     value = order.total_sum
@@ -75,5 +80,13 @@ def payment_acceptance(response):
     elif response['event'] == 'payment.canceled':
         order.status = 4
         order.save()
+
+    # Отправка уведомления о смене статуса заказа, если у пользователя включены уведомления.
+    if order.initiator.receive_email_notifications:
+        send_order_status_notification.delay(
+            status=response['event'],
+            email=order.initiator.email,
+            order_id=order.public_id
+        )
 
     return True

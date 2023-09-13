@@ -41,10 +41,11 @@ class User(AbstractModel, AbstractBaseUser, PermissionsMixin):
     username = models.CharField(db_index=True, max_length=255, unique=True)
     first_name = models.CharField(max_length=255, blank=True)
     last_name = models.CharField(max_length=255, blank=True)
-
     email = models.EmailField(db_index=True, unique=True)
+
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
+    receive_email_notifications = models.BooleanField(default=True)
 
     bio = models.TextField(null=True, blank=True)
     avatar = models.ImageField(null=True, blank=True, upload_to='avatars')
