@@ -1,10 +1,24 @@
 services:
+  redis:
+    image: redis
+    restart: always
+
+  db:
+    image: postgres:latest
+    restart: always
+    container_name: store-db
+    env_file:
+      - .env
+    volumes:
+      - pgdbdata:/var/lib/postgresql/data/
+
   store-app:
     build:
       context: .
     ports:
       - "8080:8080"
-    command: python manage.py runserver 0.0.0.0:8080
+    command: >
+      bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8080"
     container_name: store-app
     env_file:
       - .env
@@ -13,13 +27,29 @@ services:
     depends_on:
       - db
 
-  db:
-    image: postgres:latest
-    container_name: store-db
-    env_file:
-      - .env
+  worker:
+    restart: always
+    build:
+      context: .
     volumes:
-      - pgdbdata:/var/lib/postgresql/data/
+      - ./celerydata:/app/src/celerydata
+    command: celery -A store worker -l INFO
+    depends_on:
+      - db
+      - redis
+      - store-app
+
+  celery-beats:
+    restart: always
+    build:
+      context: .
+    volumes:
+      - ./db:/app/src/db
+    command: celery -A store beat -l INFO
+    depends_on:
+      - worker
+      - redis
+      - store-app
 
 volumes:
   pgdbdata:
