@@ -5,7 +5,7 @@ from rest_framework.exceptions import ValidationError
 
 from api.reviews.serializers import ReviewSerializer
 from api.reviews.models import Review
-from api.auth.permissions import UserPermission
+from api.user.permissions import UserPermission
 from api.products.models import Product
 
 
@@ -16,17 +16,24 @@ from api.products.models import Product
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (UserPermission,)
-    http_method_names = ('post', 'get', 'patch', 'delete',)
-    lookup_field = 'public_id'
+    http_method_names = (
+        "post",
+        "get",
+        "patch",
+        "delete",
+    )
+    lookup_field = "public_id"
 
     def get_queryset(self):
-        return Review.objects.filter(product__public_id=self.kwargs['product_public_id'])
+        return Review.objects.filter(
+            product__public_id=self.kwargs["product_public_id"]
+        )
 
     def get_object(self):
-        obj = Review.objects.get_object_by_public_id(self.kwargs['public_id'])
+        obj = Review.objects.get_object_by_public_id(self.kwargs["public_id"])
         return obj
 
-    @extend_schema(summary='Добавить отзыв на купленный товар.', methods=["POST"])
+    @extend_schema(summary="Добавить отзыв на купленный товар.", methods=["POST"])
     def create(self, request, *args, **kwargs):
         """
         Создание отзыва на товар при условие что пользователь уже купил его.
@@ -39,7 +46,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @extend_schema(summary='Изменить отзыв.', methods=["PATCH"])
+    @extend_schema(summary="Изменить отзыв.", methods=["PATCH"])
     def partial_update(self, request, *args, **kwargs):
         """
         Частичная замена атрибутов отзыва.
@@ -59,17 +66,25 @@ class ReviewViewSet(viewsets.ModelViewSet):
         Метод проверяющий писал ли пользователь отзыв на товар или нет,
         после чего присваивает модель пользователя и товара к модели отзыва и сохраняет ее.
         """
-        product = Product.objects.get_object_by_public_id(self.kwargs['product_public_id'])
+        product = Product.objects.get_object_by_public_id(
+            self.kwargs["product_public_id"]
+        )
         self.check_object_permissions(self.request, product)
 
         # Проверка писал ли пользователь отзыв для этого товара.
-        if not self.request.user.is_superuser and Review.objects.filter(
-                author=self.request.user, product=product).exists():
-            raise ValidationError({"rejection": "You have already written a review for this product."})
+        if (
+            not self.request.user.is_superuser
+            and Review.objects.filter(
+                author=self.request.user, product=product
+            ).exists()
+        ):
+            raise ValidationError(
+                {"rejection": "You have already written a review for this product."}
+            )
         else:
             serializer.save(author=self.request.user, product=product)
 
-    @extend_schema(summary='Удалить отзыв.', methods=["DELETE"])
+    @extend_schema(summary="Удалить отзыв.", methods=["DELETE"])
     def destroy(self, request, *args, **kwargs):
         """
         Удаление отзыва.

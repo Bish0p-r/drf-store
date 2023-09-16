@@ -14,27 +14,26 @@ router = routers.SimpleRouter()
 # router.register(r'auth/refresh', RefreshViewSet, basename='auth-refresh')
 # router.register(r'auth/change-password', ChangePasswordView, basename='auth-change-password')
 
-router.register(r'user', UserViewSet, basename='user')
+router.register(r"user", UserViewSet, basename="user")
 
-router.register(r'order', OrderViewSet, basename='order')
+router.register(r"order", OrderViewSet, basename="order")
 
-router.register(r'product', ProductViewSet, basename='product')
+router.register(r"product", ProductViewSet, basename="product")
 
-size_router = routers.NestedSimpleRouter(router, r'product', lookup='product')
-size_router.register(r'size', SizeViewSet, basename='product-size')
+size_router = routers.NestedSimpleRouter(router, r"product", lookup="product")
+size_router.register(r"size", SizeViewSet, basename="product-size")
 
-review_router = routers.NestedSimpleRouter(router, r'product', lookup='product')
-review_router.register(r'review', ReviewViewSet, basename='product-review')
+review_router = routers.NestedSimpleRouter(router, r"product", lookup="product")
+review_router.register(r"review", ReviewViewSet, basename="product-review")
 
 
 urlpatterns = [
     *router.urls,
     *size_router.urls,
     *review_router.urls,
-    path('create_payment', CreatePaymentView.as_view()),
-    path('payment_acceptance', CreatePaymentAcceptanceView.as_view()),
-    path('auth/', include('djoser.urls')),
-    path('auth/', include('djoser.urls.jwt')),
+    path("create_payment", CreatePaymentView.as_view()),
+    path("payment_acceptance", CreatePaymentAcceptanceView.as_view()),
+    path("auth/", include("djoser.urls")),
+    path("auth/", include("djoser.urls.jwt")),
     # path('auth/change-password', ChangePasswordView.as_view()),
-
 ]

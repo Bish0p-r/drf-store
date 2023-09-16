@@ -6,13 +6,17 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from api.auth.serializers import RegisterSerializer, LoginSerializer, ChangePasswordSerializer
+from api.auth.serializers import (
+    RegisterSerializer,
+    LoginSerializer,
+    ChangePasswordSerializer,
+)
 
 
 class RegisterViewSet(ViewSet):
     serializer_class = RegisterSerializer
     permission_classes = (AllowAny,)
-    http_method_names = ('post',)
+    http_method_names = ("post",)
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -25,17 +29,20 @@ class RegisterViewSet(ViewSet):
             "access": str(refresh.access_token),
         }
 
-        return Response({
-            "user": serializer.data,
-            "refresh": res["refresh"],
-            "token": res["access"]
-        }, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "user": serializer.data,
+                "refresh": res["refresh"],
+                "token": res["access"],
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class LoginViewSet(ViewSet):
     serializer_class = LoginSerializer
     permission_classes = (AllowAny,)
-    http_method_names = ('post',)
+    http_method_names = ("post",)
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -50,7 +57,7 @@ class LoginViewSet(ViewSet):
 
 class RefreshViewSet(viewsets.ViewSet, TokenRefreshView):
     permission_classes = (AllowAny,)
-    http_method_names = ('post',)
+    http_method_names = ("post",)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -71,12 +78,8 @@ class ChangePasswordView(generics.UpdateAPIView):
         serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():
-            self.request.user.set_password(serializer.validated_data['password1'])
+            self.request.user.set_password(serializer.validated_data["password1"])
             self.request.user.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-

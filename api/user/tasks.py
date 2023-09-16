@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.conf import settings
@@ -28,7 +28,7 @@ def xsum(numbers):
 def cart_email_notification():
     users = User.objects.filter(
         receive_email_notifications=True,
-        carts__created__lt=timezone.now() - timedelta(hours=12)
+        carts__created__lt=timezone.now() - timedelta(hours=12),
     )
 
     if users.exists():

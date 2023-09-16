@@ -16,12 +16,12 @@ def yookassa_create_order(data):
     Configuration.account_id = settings.YOOKASSA_ACCOUNT_ID
     Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
 
-    user_id = data.get('id')
-    return_url = data.get('return_url')
-    first_name = data.get('first_name')
-    last_name = data.get('last_name')
-    address = data.get('address')
-    coupon = data.get('coupon')
+    user_id = data.get("id")
+    return_url = data.get("return_url")
+    first_name = data.get("first_name")
+    last_name = data.get("last_name")
+    address = data.get("address")
+    coupon = data.get("coupon")
 
     user = User.objects.get(public_id=user_id)
     cart_history = dict()
@@ -34,7 +34,7 @@ def yookassa_create_order(data):
         cart_history=cart_history,
         first_name=first_name,
         last_name=last_name,
-        address=address
+        address=address,
     )
 
     if coupon:
@@ -43,19 +43,19 @@ def yookassa_create_order(data):
     else:
         value = order.total_sum
 
-    payment = Payment.create({
-        "amount": {
-            "value": f"{value}",
-            "currency": "RUB"
+    payment = Payment.create(
+        {
+            "amount": {"value": f"{value}", "currency": "RUB"},
+            "confirmation": {
+                "type": "redirect",
+                "return_url": return_url,
+            },
+            "capture": True,
+            "description": f"Заказ №{str(order.public_id)}",
+            "metadata": {"order_public_id": str(order.public_id)},
         },
-        "confirmation": {
-            "type": "redirect",
-            "return_url": return_url,
-        },
-        "capture": True,
-        "description": f"Заказ №{str(order.public_id)}",
-        "metadata": {"order_public_id": str(order.public_id)},
-    }, uuid.uuid4())
+        uuid.uuid4(),
+    )
 
     user.carts.all().delete()
 
@@ -65,34 +65,38 @@ def yookassa_create_order(data):
 def payment_acceptance(response):
     """Изменение статуса заказа в зависимости от статуса оплаты."""
     try:
-        order = Order.objects.get(public_id=response['object']['metadata']['order_public_id'])
+        order = Order.objects.get(
+            public_id=response["object"]["metadata"]["order_public_id"]
+        )
 
     except ObjectDoesNotExist:
         return False
 
-    if response['event'] == 'payment.succeeded':
+    if response["event"] == "payment.succeeded":
         order.status = 1
         user = order.initiator
 
         for data in order.cart_history.values():
-            product_size_id = data['product']['size_id']
-            product_size_quantity = data['product']['quantity']
+            product_size_id = data["product"]["size_id"]
+            product_size_quantity = data["product"]["quantity"]
             product = Size.objects.get_object_by_public_id(product_size_id)
             product.quantity -= int(product_size_quantity)
-            user.products_bought.add(Product.objects.get_object_by_public_id(data['product']['product_id']))
+            user.products_bought.add(
+                Product.objects.get_object_by_public_id(data["product"]["product_id"])
+            )
             product.save()
         order.save()
 
-    elif response['event'] == 'payment.canceled':
+    elif response["event"] == "payment.canceled":
         order.status = 4
         order.save()
 
     # Отправка уведомления о смене статуса заказа, если у пользователя включены уведомления.
     if order.initiator.receive_email_notifications:
         send_order_status_notification.delay(
-            status=response['event'],
+            status=response["event"],
             email=order.initiator.email,
-            order_id=order.public_id
+            order_id=order.public_id,
         )
 
     return True

@@ -22,10 +22,10 @@ class BrandAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price')
-    filter_horizontal = ('brands',)
-    list_display_links = ('name', 'category')
-    search_fields = ('name', 'category')
+    list_display = ("name", "category", "price")
+    filter_horizontal = ("brands",)
+    list_display_links = ("name", "category")
+    search_fields = ("name", "category")
     # prepopulated_fields = {'slug': ('name',)}
     inlines = [GalleryInline, SizeInline, ReviewInline]
 

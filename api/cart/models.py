@@ -2,12 +2,14 @@ from django.db import models
 
 from api.abstract.models import AbstractModel
 from api.user.models import User
-from api.products.models import Product, Size
+from api.products.models import Size
 
 
 class Cart(AbstractModel):
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='carts')
-    product_size = models.ForeignKey(to=Size, on_delete=models.CASCADE, related_name='carts')
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="carts")
+    product_size = models.ForeignKey(
+        to=Size, on_delete=models.CASCADE, related_name="carts"
+    )
 
     quantity = models.PositiveIntegerField(default=1)
 
@@ -23,11 +25,11 @@ class Cart(AbstractModel):
                 "name": self.product_size.product.name,
                 "size": self.product_size.name,
                 "quantity": float(self.quantity),
-                "price": float(self.product_size.product.price)
-            }
+                "price": float(self.product_size.product.price),
+            },
         }
 
         return data
 
     def __str__(self):
-        return f'Cart id: {self.public_id} Product: {self.product_size}'
+        return f"Cart id: {self.public_id} Product: {self.product_size}"

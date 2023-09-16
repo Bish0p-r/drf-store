@@ -11,11 +11,11 @@ class Order(AbstractModel):
     DELIVERED = 3
     CANCELLED = 4
     STATUSES = (
-        (CREATED, 'Создан'),
-        (PAID, 'Оплачен'),
-        (ON_WAY, 'В пути'),
-        (DELIVERED, 'Доставлен'),
-        (CANCELLED, 'Отменен'),
+        (CREATED, "Создан"),
+        (PAID, "Оплачен"),
+        (ON_WAY, "В пути"),
+        (DELIVERED, "Доставлен"),
+        (CANCELLED, "Отменен"),
     )
 
     first_name = models.CharField(max_length=64, blank=True)
@@ -24,10 +24,15 @@ class Order(AbstractModel):
     cart_history = models.JSONField(default=dict)
     status = models.IntegerField(choices=STATUSES, default=CREATED)
 
-    initiator = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='orders')
+    initiator = models.ForeignKey(
+        to=User, on_delete=models.CASCADE, related_name="orders"
+    )
 
     def already_delivered(self, product_id):
-        return self.status == Order.DELIVERED and self.cart_history["product"]["product_id"] == product_id
+        return (
+            self.status == Order.DELIVERED
+            and self.cart_history["product"]["product_id"] == product_id
+        )
 
     @property
     def total_sum(self):

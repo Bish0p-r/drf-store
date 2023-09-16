@@ -35,16 +35,24 @@ class TestUserViewSet:
 
     def test_partial_update(self, client, user, admin, user_variation):
         client.force_authenticate(user=user)
-        response = client.patch(f"/api/user/{user.public_id}/", {"is_active": False, "first_name": "Test_Name"})
+        response = client.patch(
+            f"/api/user/{user.public_id}/",
+            {"is_active": False, "first_name": "Test_Name"},
+        )
         assert response.status_code == 200
         assert response.data["is_active"] == True
         assert response.data["first_name"] == "Test_Name"
         client.force_authenticate(user=user_variation)
-        response = client.patch(f"/api/user/{user.public_id}/", {"is_active": False, "first_name": "Test_permission"})
+        response = client.patch(
+            f"/api/user/{user.public_id}/",
+            {"is_active": False, "first_name": "Test_permission"},
+        )
         assert response.status_code == 403
         client.force_authenticate(user=admin)
-        response = client.patch(f"/api/user/{user.public_id}/",
-                                {"is_active": False, "first_name": "Test_admin_permission"})
+        response = client.patch(
+            f"/api/user/{user.public_id}/",
+            {"is_active": False, "first_name": "Test_admin_permission"},
+        )
         assert response.status_code == 200
         assert response.data["first_name"] == "Test_admin_permission"
 
@@ -61,6 +69,3 @@ class TestUserViewSet:
         client.force_authenticate(user=admin)
         response = client.post(f"/api/user/{user.public_id}/clean_cart/")
         assert response.status_code == 200
-
-
-

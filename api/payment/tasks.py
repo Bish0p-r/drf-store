@@ -11,7 +11,7 @@ def send_order_status_notification(email, order_id, status):
     subject = f"Изменение статуса вашего заказа №{order_id}"
     message = f"Ваш заказ №{order_id} был отменен."
 
-    if status == 'payment.succeeded':
+    if status == "payment.succeeded":
         message = f"Ваш заказ №{order_id} был успешно оплачен."
 
     send_mail(
@@ -25,7 +25,7 @@ def send_order_status_notification(email, order_id, status):
 
 @shared_task
 def coupon_deactivation():
-    expired_coupons = Coupon.objects.filter(is_active=True, expired_at__lte=timezone.now())
+    expired_coupons = Coupon.objects.filter(
+        is_active=True, expired_at__lte=timezone.now()
+    )
     expired_coupons.update(is_active=False)
-
-

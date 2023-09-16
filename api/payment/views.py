@@ -16,16 +16,18 @@ class CreatePaymentView(CreateAPIView):
     serializer_class = CreatePaymentSerializer
     permission_classes = (IsAuthenticated,)
 
-    @extend_schema(summary='Создать платеж через Yookassa.', methods=["POST"])
+    @extend_schema(summary="Создать платеж через Yookassa.", methods=["POST"])
     def post(self, request, *args, **kwargs):
         """
         Создание заказа и ссылки для оплаты.
         - POST /api/payment_create/
         """
-        cart = Cart.objects.filter(user__public_id=request.POST['id'])
+        cart = Cart.objects.filter(user__public_id=request.POST["id"])
 
         if not cart.exists():
-            return Response({"rejection": "Your cart is empty."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"rejection": "Your cart is empty."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         serializer = CreatePaymentSerializer(data=request.POST)
 
@@ -36,11 +38,13 @@ class CreatePaymentView(CreateAPIView):
 
         confirmation_url = yookassa_create_order(serializer_data)
 
-        return Response(data={"confirmation_url": confirmation_url}, status=status.HTTP_200_OK)
+        return Response(
+            data={"confirmation_url": confirmation_url}, status=status.HTTP_200_OK
+        )
 
 
 class CreatePaymentAcceptanceView(CreateAPIView):
-    @extend_schema(summary='Получение уведомлений от Yookassa.', methods=["POST"])
+    @extend_schema(summary="Получение уведомлений от Yookassa.", methods=["POST"])
     def post(self, request, *args, **kwargs):
         """
         Получение уведомлений от Yookassa и изменение статус заказа.

@@ -13,7 +13,7 @@ from api.user.models import User
 def cart_email_notification():
     users = User.objects.filter(
         receive_email_notifications=True,
-        carts__created__lt=timezone.now() - timedelta(hours=12)
+        carts__created__lt=timezone.now() - timedelta(hours=12),
     )
 
     if users.exists():

@@ -2,7 +2,7 @@ import pytest
 
 from django.test import TestCase
 
-from api.fixtures.product import category, brand, size
+from api.fixtures.product import category, brand
 from api.products.models import Product
 
 

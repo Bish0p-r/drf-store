@@ -12,13 +12,15 @@ from api.cart.models import Cart
 
 @extend_schema_view(
     list=extend_schema(summary="Получить список товаров."),
-    retrieve=extend_schema(summary="Получить товар по public_id.")
+    retrieve=extend_schema(summary="Получить товар по public_id."),
 )
-class ProductViewSet(mixins.RetrieveModelMixin,
-                     mixins.UpdateModelMixin,
-                     mixins.DestroyModelMixin,
-                     mixins.ListModelMixin,
-                     GenericViewSet):
+class ProductViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
     serializer_class = ProductSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["created"]
@@ -37,6 +39,7 @@ class ProductViewSet(mixins.RetrieveModelMixin,
     @action(methods=["post"], detail=True, permission_classes=[IsAuthenticated])
     def add_to_wishlist(self, request, *args, **kwargs):
         """
+        Добавить продукт в список желаний.
         - POST /api/product/{public_id}/add_to_wishlist/
         """
         product = self.get_object()
@@ -67,13 +70,15 @@ class ProductViewSet(mixins.RetrieveModelMixin,
 
 @extend_schema_view(
     list=extend_schema(summary="Получить список размеров товара."),
-    retrieve=extend_schema(summary="Получить размер товар по public_id.")
+    retrieve=extend_schema(summary="Получить размер товар по public_id."),
 )
-class SizeViewSet(mixins.RetrieveModelMixin,
-                  mixins.UpdateModelMixin,
-                  mixins.DestroyModelMixin,
-                  mixins.ListModelMixin,
-                  GenericViewSet):
+class SizeViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
     serializer_class = SizeSerializer
     filter_backends = [filters.OrderingFilter]
     lookup_field = "public_id"
@@ -90,7 +95,7 @@ class SizeViewSet(mixins.RetrieveModelMixin,
         return obj
 
     @extend_schema(summary="Добавить продукт в корзину.", methods=["POST"])
-    @action(methods=["post"], detail=True,  permission_classes=[IsAuthenticated])
+    @action(methods=["post"], detail=True, permission_classes=[IsAuthenticated])
     def add_to_cart(self, request, *args, **kwargs):
         """
         Создание корзины и добавление экземпляра продукта в корзину
@@ -110,7 +115,9 @@ class SizeViewSet(mixins.RetrieveModelMixin,
             else:
                 cart.quantity += quantity
         else:
-            cart = Cart.objects.create(user=user, product_size=size, quantity=min(size.quantity, quantity))
+            cart = Cart.objects.create(
+                user=user, product_size=size, quantity=min(size.quantity, quantity)
+            )
 
         cart.save()
         serializer = self.serializer_class(size)

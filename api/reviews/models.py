@@ -7,10 +7,16 @@ from api.abstract.models import AbstractModel
 
 
 class Review(AbstractModel):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews', editable=False)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews', editable=False)
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="reviews", editable=False
+    )
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="reviews", editable=False
+    )
 
-    rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    rating = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
     text = models.TextField(max_length=512, blank=True)
     edited = models.BooleanField(default=False, editable=False)
 

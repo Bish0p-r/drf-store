@@ -13,14 +13,12 @@ def cart(db) -> Cart:
         email="test_cart@gmail.com",
         first_name="Test_cart",
         last_name="User_cart",
-        password="test_password"
+        password="test_password",
     )
     category = ProductCategory.objects.create(name="Test Category name")
     brand = Brand.objects.create(name="Test Brand name")
     product = Product.objects.create(
-        name="Test Product name",
-        price=111,
-        category=category
+        name="Test Product name", price=111, category=category
     )
     product.brands.add(brand)
     size = Size.objects.create(product=product, name="test_size", quantity=11)

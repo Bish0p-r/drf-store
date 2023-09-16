@@ -1,29 +1,29 @@
 from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
-from rest_framework import viewsets, status, mixins
+from rest_framework import status, mixins
 from rest_framework.response import Response
 from django.db.models import Q
 from rest_framework.viewsets import GenericViewSet
 
 from api.user.serializers import UserSerializer, BaseUserSerializer
 from api.user.models import User
-from api.abstract.viewsets import AbstractViewSet
 from api.cart.models import Cart
-from api.auth.permissions import UserPermission
+from api.user.permissions import UserPermission
 
 
 @extend_schema_view(
     list=extend_schema(summary="Получить список пользователей."),
-    retrieve=extend_schema(summary="Получить пользователя по public_id.")
+    retrieve=extend_schema(summary="Получить пользователя по public_id."),
 )
-class UserViewSet(mixins.RetrieveModelMixin,
-                  mixins.UpdateModelMixin,
-                  mixins.ListModelMixin,
-                  GenericViewSet):
-    http_method_names = ('patch', 'get', 'post')
+class UserViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
+    http_method_names = ("patch", "get", "post")
     permission_classes = (UserPermission,)
-    lookup_field = 'public_id'
+    lookup_field = "public_id"
 
     def get_serializer_class(self):
         """Получение сериалайзера в зависимости от того кем является пользователь."""
@@ -39,7 +39,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
         return User.objects.exclude(Q(is_superuser=True) | Q(is_active=False))
 
     def get_object(self):
-        obj = User.objects.get_object_by_public_id(self.kwargs['public_id'])
+        obj = User.objects.get_object_by_public_id(self.kwargs["public_id"])
         # Установка более расширенного сериалайзера если пользователь запрашивает свой профиль.
         if self.request.user == obj:
             self.serializer_class = UserSerializer
@@ -53,13 +53,15 @@ class UserViewSet(mixins.RetrieveModelMixin,
         """
         instance = self.get_object()
         self.check_object_permissions(self.request, instance)
-        serializer = self.get_serializer_class()(instance, data=request.data, partial=True)
+        serializer = self.get_serializer_class()(
+            instance, data=request.data, partial=True
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
 
     @extend_schema(summary="Очистить корзину пользователя.", methods=["POST"])
-    @action(methods=['post'], detail=True)
+    @action(methods=["post"], detail=True)
     def clean_cart(self, request, *args, **kwargs):
         """
         Очистка корзины товаров пользователя.

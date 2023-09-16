@@ -7,7 +7,7 @@ data_user = {
     "email": "test@gmail.com",
     "first_name": "Test",
     "last_name": "User",
-    "password": "test_password"
+    "password": "test_password",
 }
 
 data_user_variation = {
@@ -15,7 +15,7 @@ data_user_variation = {
     "email": "testvariation@gmail.com",
     "first_name": "Test_variation",
     "last_name": "User_variation",
-    "password": "test_password_variation"
+    "password": "test_password_variation",
 }
 
 data_superuser = {
@@ -23,7 +23,7 @@ data_superuser = {
     "email": "testsuperuser@gmail.com",
     "first_name": "Test",
     "last_name": "Superuser",
-    "password": "test_password"
+    "password": "test_password",
 }
 
 
