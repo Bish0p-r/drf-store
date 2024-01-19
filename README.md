@@ -1,4 +1,4 @@
-<h1>📃 Description</h1>
+<h1>Description</h1>
 
 DRF Store is a pet project built using Django REST Framework (DRF).
 It is an e-commerce platform that provides APIs for managing products,
@@ -6,7 +6,7 @@ orders, products reviews and user authentication.
 
 
 
-<h1>🔥 Features</h1>
+<h1>Features</h1>
 
 * **Products**
 * **Products reviews**
@@ -17,7 +17,7 @@ orders, products reviews and user authentication.
 
 
 
-<h1>🔧 Tech stack</h1>
+<h1>Tech stack</h1>
 
 * **Python 3.11**
 * **Django REST Framework**
@@ -31,7 +31,7 @@ orders, products reviews and user authentication.
 
 
 
-<h1>💿 Installation</h1>
+<h1>Installation</h1>
 
 1. **Clone repository.**
 ```bash
